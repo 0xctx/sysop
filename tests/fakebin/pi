@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Fake pi for offline tests. Env knobs:
+#   FAKE_PI_CALLS    file to append one line per invocation
+#   FAKE_PI_ENV      file to append AUTO_FALLBACK as each run sees it
+#   FAKE_PI_NOAUTH=1 list no models (signed in nowhere), the way pi does
+#   FAKE_PI_NOKEY=<provider>  -p runs fail like a provider without a login
+#   FAKE_PI_EXTRA    one more listing row ("provider model ctx maxout thinking images")
+[ -n "$FAKE_PI_CALLS" ] && echo "$*" >> "$FAKE_PI_CALLS"
+[ -n "$FAKE_PI_ENV" ] && echo "AUTO_FALLBACK=${AUTO_FALLBACK-unset}" >> "$FAKE_PI_ENV"
+if [ "$1" = "--list-models" ]; then
+  if [ "$FAKE_PI_NOAUTH" = "1" ]; then
+    echo "No models available. Use /login to log into a provider via OAuth or API key. See:"
+    echo "  /docs/providers.md"
+    exit 0
+  fi
+  printf '\033[1mprovider    model                         context  max-out  thinking  images\033[0m\n'
+  echo "cline       google/gemma-4-31b-it:free    256K     8K       yes       yes"
+  echo "cline       nvidia/nemotron-3-super-120b-a12b:free  128K  8K  yes  no"
+  echo "kaggle      qwen3-coder-30b               64K      8K       no        no"
+  echo "google      gemini-3.5-flash              1M       65K      yes       yes"
+  [ -n "$FAKE_PI_EXTRA" ] && echo "$FAKE_PI_EXTRA"
+  exit 0
+fi
+if [ -n "$FAKE_PI_NOKEY" ]; then echo "No API key for provider: $FAKE_PI_NOKEY"; exit 1; fi
+echo "fake pi ran: $* in $(pwd)"
+echo "OK"
+echo "REVIEW-START"
+echo "No defects found; checked the diff."
+if [ -z "$FAKE_NO_COVERAGE" ]; then echo "COVERAGE"; git diff --name-only main...HEAD 2>/dev/null | sed 's/$/: read/'; fi
+exit "${FAKE_PI_EXIT:-0}"

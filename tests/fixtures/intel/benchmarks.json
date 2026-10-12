@@ -1,0 +1,9 @@
+{
+ "gemini-3.5-flash-high": {"codingIndex": 70.1, "gpqa": 0.91, "hle": 0.3, "lastUpdated": "2026-09-01"},
+ "gemini-3.5-flash-lite": {"codingIndex": 49.3, "gpqa": 0.8, "lastUpdated": "2026-09-01"},
+ "gemini-3.5-flash-minimal": {"gpqa": 0.82, "lastUpdated": "2026-09-01"},
+ "gemma-4-31b-reasoning": {"codingIndex": 43.4, "gpqa": 0.78, "lastUpdated": "2026-09-01"},
+ "nemotron-3-super-120b-a12b-reasoning": {"codingIndex": 47.0, "gpqa": 0.8, "lastUpdated": "2026-09-01"},
+ "claude-sonnet-5-adaptive-reasoning-max-effort": {"codingIndex": 71.5, "gpqa": 0.93, "lastUpdated": "2026-09-01"},
+ "gpt-oss-120b-high": {"codingIndex": 30.4, "gpqa": 0.782, "lastUpdated": "2026-08-15"}
+}

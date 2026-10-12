@@ -1,0 +1,50 @@
+{
+  "name": "writing",
+  "summary": "Books and articles: Sonnet drafts, Opus takes the hard chapters, the prose reviewer and another vendor review.",
+  "session": "sonnet",
+  "needs": [
+    "claude"
+  ],
+  "optional": [
+    "agy: Gemini 3.1 Pro as a second voice and reviewer"
+  ],
+  "capacity": "your plan's usage limits",
+  "caveats": [
+    "For prose repos, set the check to the writing gate: `config set check \"python3 <plugin>/scripts/sysop.py prose-check .\"`."
+  ],
+  "settings": {
+    "tiers": {
+      "fast": [
+        "claude:haiku"
+      ],
+      "standard": [
+        "claude:sonnet",
+        "agy:gemini-3.1-pro-high"
+      ],
+      "deep": [
+        "claude:opus"
+      ],
+      "review": [
+        "agy:gemini-3.1-pro-high",
+        "pi:google/gemini-3.8-flash@high",
+        "claude:sonnet"
+      ],
+      "verify": [
+        "claude:haiku"
+      ]
+    },
+    "routes": {
+      "small": "standard",
+      "large": "standard",
+      "risky": "deep",
+      "writing": "auto:writing",
+      "docs": "auto:writing"
+    },
+    "prefer": "quality",
+    "cross_review": true,
+    "max_parallel": 2,
+    "agents": {
+      "default": "inherit"
+    }
+  }
+}

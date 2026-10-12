@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python: ["3.11", "3.13"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Artifact checks (fast; the files Claude Code and GitHub read)
+        run: |
+          python3 -m pip install pyyaml
+          python3 -m unittest discover -s tests -p test_artifacts.py
+          python3 scripts/lint.py .
+      - name: Unit tests (offline; agent CLIs are faked)
+        run: python3 -m unittest discover -s tests
+      # `claude plugin validate .` and `claude plugin test .` (the mod) need Claude Code, which CI does not
+      # install; run them locally.

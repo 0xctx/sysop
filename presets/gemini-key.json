@@ -1,0 +1,48 @@
+{
+  "name": "gemini-key",
+  "summary": "Only a free AI Studio key: Gemini 3.8 Flash builds, Claude reviews if present.",
+  "session": "haiku",
+  "needs": [
+    "pi",
+    "gemini-key"
+  ],
+  "optional": [
+    "claude: the reviewer from another vendor"
+  ],
+  "capacity": "about 20 requests a day on a free key: one small ticket a day. For trying sysop, not for work",
+  "caveats": [
+    "Without claude, no reviewer from another vendor is available, and the review says so.",
+    "Google sets the free limits and changes them; AI Studio shows yours."
+  ],
+  "settings": {
+    "tiers": {
+      "fast": [
+        "pi:google/gemini-3.8-flash"
+      ],
+      "standard": [
+        "pi:google/gemini-3.8-flash@high"
+      ],
+      "deep": [
+        "pi:google/gemini-3.8-flash@high"
+      ],
+      "review": [
+        "claude:sonnet"
+      ],
+      "verify": [
+        "claude:haiku",
+        "pi:google/gemini-3.8-flash"
+      ]
+    },
+    "routes": {
+      "small": "fast",
+      "large": "standard",
+      "risky": "deep"
+    },
+    "prefer": "economy",
+    "cross_review": true,
+    "max_parallel": 1,
+    "agents": {
+      "default": "haiku"
+    }
+  }
+}

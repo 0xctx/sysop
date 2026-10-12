@@ -1,0 +1,17 @@
+{
+  "name": "sysop",
+  "version": "1.0.0",
+  "description": "A small, autonomous delivery toolkit: contract-first changes carried to a checked, independently reviewed, landed state, alone or as a parallel fleet across claude, agy and pi (free models included).",
+  "author": {
+    "name": "0xctx"
+  },
+  "license": "MIT",
+  "keywords": [
+    "delivery",
+    "review",
+    "worktrees",
+    "fleet",
+    "hooks"
+  ],
+  "types": "./types/index.d.ts"
+}

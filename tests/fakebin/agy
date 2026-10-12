@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Fake agy for offline tests. Env knobs:
+#   FAKE_AGY_CALLS   file to append one line per invocation (counts roster refreshes)
+#   FAKE_AGY_MODELS_FAIL=1   make `agy models` fail
+#   FAKE_AGY_EXIT    exit code for -p runs (default 0)
+#   FAKE_AGY_OUTPUT  print this instead of a review (e.g. a quota error)
+#   FAKE_AGY_PWD     file to append the working directory of each -p run
+[ -n "$FAKE_AGY_CALLS" ] && echo "$*" >> "$FAKE_AGY_CALLS"
+if [ "$1" = "models" ]; then
+  if [ "$FAKE_AGY_MODELS_FAIL" = "1" ]; then echo "error: not signed in" >&2; exit 1; fi
+  echo "Fetching available models..."
+  printf 'gemini-3.8-flash-high\tGemini 3.8 Flash (High)\n'
+  printf 'gemini-3.1-pro-high\tGemini 3.1 Pro (High)\n'
+  printf 'claude-sonnet-4-6\tClaude Sonnet 4.6 (Thinking)\n'
+  printf 'gpt-oss-120b-medium\tGPT-OSS 120B (Medium)\n'
+  exit 0
+fi
+[ -n "$FAKE_AGY_PWD" ] && pwd >> "$FAKE_AGY_PWD"
+if [ -n "$FAKE_AGY_OUTPUT" ]; then echo "$FAKE_AGY_OUTPUT"; exit "${FAKE_AGY_EXIT:-0}"; fi
+echo "fake agy ran: $* in $(pwd)"
+echo "REVIEW-START"
+echo "No defects found; checked the diff."
+if [ -z "$FAKE_NO_COVERAGE" ]; then echo "COVERAGE"; git diff --name-only main...HEAD 2>/dev/null | sed 's/$/: read/'; fi
+exit "${FAKE_AGY_EXIT:-0}"

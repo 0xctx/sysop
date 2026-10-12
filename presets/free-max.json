@@ -1,0 +1,70 @@
+{
+  "name": "free-max",
+  "summary": "Every free source you have, in order: OpenRouter's free models, then Kilo's free gateway, then Cline, then the Gemini key; Groq's GPT-OSS reviews.",
+  "session": "haiku",
+  "needs": [
+    "pi"
+  ],
+  "optional": [
+    "openrouter",
+    "kilo",
+    "pi-free",
+    "gemini-key",
+    "groq"
+  ],
+  "capacity": "the most free capacity, by spreading load across sources; quality varies the most",
+  "caveats": [
+    "Sources you lack are skipped at route time.",
+    "The Cline entries go through pi-free, which presents itself as Cline's VS Code client; drop them if you do not accept that.",
+    "Free routes may log prompts."
+  ],
+  "settings": {
+    "tiers": {
+      "fast": [
+        "pi:openrouter/nvidia/nemotron-3.5-lightning:free",
+        "pi:kilo/nvidia/nemotron-3.5-lightning:free",
+        "pi:cline/nvidia/nemotron-3.5-lightning:free",
+        "pi:google/gemini-3.8-flash",
+        "pi:groq/openai/gpt-oss-120b"
+      ],
+      "standard": [
+        "pi:openrouter/poolside/laguna-s-2.1:free",
+        "pi:kilo/poolside/laguna-s-2.1:free",
+        "pi:cline/poolside/laguna-s-2.1:free",
+        "pi:google/gemini-3.8-flash@high"
+      ],
+      "deep": [
+        "pi:openrouter/nvidia/nemotron-3-ultra-550b-a55b:free",
+        "pi:kilo/nvidia/nemotron-3-ultra-550b-a55b:free",
+        "pi:cline/nvidia/nemotron-3-ultra-550b-a55b:free",
+        "pi:google/gemini-3.8-flash@high"
+      ],
+      "review": [
+        "pi:groq/openai/gpt-oss-120b",
+        "pi:openrouter/google/gemma-4-31b-it:free",
+        "pi:google/gemini-3.8-flash@high",
+        "pi:kilo/poolside/laguna-s-2.1:free",
+        "pi:cline/poolside/laguna-s-2.1:free",
+        "pi:openrouter/nvidia/nemotron-3-super-120b-a12b:free"
+      ],
+      "verify": [
+        "pi:groq/openai/gpt-oss-120b",
+        "pi:openrouter/nvidia/nemotron-3-super-120b-a12b:free",
+        "pi:kilo/nvidia/nemotron-3-super-120b-a12b:free",
+        "pi:google/gemini-3.8-flash",
+        "pi:cline/nvidia/nemotron-3-super-120b-a12b:free"
+      ]
+    },
+    "routes": {
+      "small": "fast",
+      "large": "standard",
+      "risky": "deep"
+    },
+    "prefer": "economy",
+    "cross_review": true,
+    "max_parallel": 3,
+    "agents": {
+      "default": "haiku"
+    }
+  }
+}

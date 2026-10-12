@@ -1,0 +1,51 @@
+{
+  "name": "claude-plan",
+  "summary": "Your Claude plan does the work: Haiku for small tickets, Sonnet for large, Opus for risky. sysop's default.",
+  "session": "sonnet",
+  "needs": [
+    "claude"
+  ],
+  "optional": [
+    "agy, or pi with a free GEMINI_API_KEY: a second vendor for the review and a backup builder"
+  ],
+  "capacity": "your plan's usage limits; roughly 40 small tickets per 5-hour window on Pro (estimate)",
+  "caveats": [
+    "Without agy or pi, no reviewer from another vendor is available, and the review says so."
+  ],
+  "settings": {
+    "tiers": {
+      "fast": [
+        "claude:haiku",
+        "pi:google/gemini-3.8-flash"
+      ],
+      "standard": [
+        "claude:sonnet",
+        "pi:google/gemini-3.8-flash@high"
+      ],
+      "deep": [
+        "claude:opus",
+        "claude:sonnet"
+      ],
+      "review": [
+        "agy:gemini-3.8-flash-high",
+        "pi:google/gemini-3.8-flash@high",
+        "claude:sonnet"
+      ],
+      "verify": [
+        "claude:haiku",
+        "pi:google/gemini-3.8-flash"
+      ]
+    },
+    "routes": {
+      "small": "fast",
+      "large": "standard",
+      "risky": "deep"
+    },
+    "prefer": "balanced",
+    "cross_review": true,
+    "max_parallel": 3,
+    "agents": {
+      "default": "sonnet"
+    }
+  }
+}

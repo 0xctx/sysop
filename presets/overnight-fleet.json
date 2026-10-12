@@ -1,0 +1,65 @@
+{
+  "name": "overnight-fleet",
+  "summary": "A backlog under `/loop /sysop:fleet --resume`: each tier mixes Claude and free models, so no one limit stalls the night.",
+  "session": "sonnet",
+  "needs": [
+    "claude",
+    "pi"
+  ],
+  "optional": [
+    "openrouter",
+    "kilo",
+    "pi-free",
+    "groq"
+  ],
+  "capacity": "your plan's limits plus the free sources; four workers at once",
+  "caveats": [
+    "Set `config set notify ntfy:<topic>` to hear when it needs you.",
+    "The Cline entries go through pi-free, which presents itself as Cline's VS Code client; drop them if you do not accept that.",
+    "Free routes may log prompts."
+  ],
+  "settings": {
+    "tiers": {
+      "fast": [
+        "claude:haiku",
+        "pi:openrouter/nvidia/nemotron-3.5-lightning:free",
+        "pi:kilo/nvidia/nemotron-3.5-lightning:free",
+        "pi:cline/nvidia/nemotron-3.5-lightning:free"
+      ],
+      "standard": [
+        "claude:sonnet",
+        "pi:openrouter/poolside/laguna-s-2.1:free",
+        "pi:kilo/poolside/laguna-s-2.1:free",
+        "pi:cline/poolside/laguna-s-2.1:free"
+      ],
+      "deep": [
+        "claude:opus",
+        "pi:openrouter/nvidia/nemotron-3-ultra-550b-a55b:free",
+        "pi:kilo/nvidia/nemotron-3-ultra-550b-a55b:free"
+      ],
+      "review": [
+        "pi:openrouter/google/gemma-4-31b-it:free",
+        "pi:groq/openai/gpt-oss-120b",
+        "pi:google/gemini-3.8-flash@high",
+        "pi:openrouter/nvidia/nemotron-3-super-120b-a12b:free",
+        "claude:sonnet"
+      ],
+      "verify": [
+        "claude:haiku",
+        "pi:openrouter/nvidia/nemotron-3-super-120b-a12b:free"
+      ]
+    },
+    "routes": {
+      "small": "fast",
+      "large": "standard",
+      "risky": "deep"
+    },
+    "prefer": "balanced",
+    "cross_review": true,
+    "max_parallel": 4,
+    "budget": 2.0,
+    "agents": {
+      "default": "haiku"
+    }
+  }
+}

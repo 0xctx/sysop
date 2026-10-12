@@ -1,0 +1,61 @@
+{
+  "name": "openrouter-free",
+  "summary": "OpenRouter's free models only: Laguna and Nemotron build, Gemma reviews. No spend; Kilo's free gateway is the second door to the same models.",
+  "session": "haiku",
+  "needs": [
+    "pi",
+    "openrouter"
+  ],
+  "optional": [
+    "kilo"
+  ],
+  "capacity": "50 free requests a day, or 1,000 once the account has bought $10 of credit: roughly 15-30 small tickets (estimate)",
+  "caveats": [
+    "Free routes may log prompts: keep private code on paid routes or providers you trust.",
+    "Free models are rate-limited (20 a minute) and sometimes busy; sysop falls back and records it."
+  ],
+  "settings": {
+    "tiers": {
+      "fast": [
+        "pi:openrouter/poolside/laguna-s-2.1:free",
+        "pi:kilo/poolside/laguna-s-2.1:free",
+        "pi:openrouter/nvidia/nemotron-3.5-lightning:free",
+        "pi:kilo/nvidia/nemotron-3.5-lightning:free"
+      ],
+      "standard": [
+        "pi:openrouter/nvidia/nemotron-3-ultra-550b-a55b:free",
+        "pi:kilo/nvidia/nemotron-3-ultra-550b-a55b:free",
+        "pi:openrouter/poolside/laguna-s-2.1:free",
+        "pi:kilo/poolside/laguna-s-2.1:free"
+      ],
+      "deep": [
+        "pi:openrouter/nvidia/nemotron-3-ultra-550b-a55b:free",
+        "pi:kilo/nvidia/nemotron-3-ultra-550b-a55b:free"
+      ],
+      "review": [
+        "pi:openrouter/google/gemma-4-31b-it:free",
+        "pi:openrouter/poolside/laguna-s-2.1:free",
+        "pi:kilo/poolside/laguna-s-2.1:free",
+        "pi:openrouter/nvidia/nemotron-3-super-120b-a12b:free",
+        "pi:kilo/nvidia/nemotron-3-super-120b-a12b:free"
+      ],
+      "verify": [
+        "pi:openrouter/nvidia/nemotron-3-super-120b-a12b:free",
+        "pi:kilo/nvidia/nemotron-3-super-120b-a12b:free",
+        "pi:openrouter/poolside/laguna-s-2.1:free",
+        "pi:kilo/poolside/laguna-s-2.1:free"
+      ]
+    },
+    "routes": {
+      "small": "fast",
+      "large": "standard",
+      "risky": "deep"
+    },
+    "prefer": "economy",
+    "cross_review": true,
+    "max_parallel": 2,
+    "agents": {
+      "default": "haiku"
+    }
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "about": "Models for Kaggle batch jobs (2x T4, llama.cpp). tok_s is measured by sysop's spike, not quoted.",
+  "models": {
+    "gemma-4-26b-a4b": {
+      "repo": "google/gemma-4-26B-A4B-it-qat-q4_0-gguf",
+      "file": "gemma-4-26B_q4_0-it.gguf",
+      "license": "apache-2.0",
+      "parallel": 8,
+      "ctx": 4096,
+      "flags": [
+        "-ngl",
+        "99",
+        "--split-mode",
+        "layer",
+        "--flash-attn",
+        "on",
+        "-ctk",
+        "q8_0",
+        "-ctv",
+        "q8_0"
+      ],
+      "strengths": {
+        "writing": 4,
+        "code": 3,
+        "reasoning": 3
+      },
+      "tok_s": 133.7,
+      "source": "spike 2, 2026-10-06: 2x T4, 8 parallel, 64x256 tokens, llama.cpp CUDA q8_0 KV",
+      "per_request_tok_s": 16.7,
+      "ready_minutes": {
+        "cached_engine": 2.5,
+        "first_build": 29
+      }
+    },
+    "qwen3.6-35b-a3b": {
+      "repo": "unsloth/Qwen3.6-35B-A3B-GGUF",
+      "file": "Qwen3.6-35B-A3B-UD-Q4_K_M.gguf",
+      "license": "apache-2.0",
+      "parallel": 8,
+      "ctx": 4096,
+      "flags": [
+        "-ngl",
+        "99",
+        "--split-mode",
+        "layer",
+        "--flash-attn",
+        "on",
+        "-ctk",
+        "q8_0",
+        "-ctv",
+        "q8_0"
+      ],
+      "reasoning": true,
+      "strengths": {
+        "writing": 4,
+        "code": 4,
+        "reasoning": 4
+      },
+      "tok_s": 111.1,
+      "source": "sysop batch 2026-10-06: 2x T4, 8 parallel, 48x256 tokens of code, llama.cpp CUDA q8_0 KV",
+      "ready_minutes": {
+        "cached_engine": 3.4
+      }
+    },
+    "qwen3.8-27b": {
+      "repo": "unsloth/Qwen3.8-27B-GGUF",
+      "file": "Qwen3.8-27B-UD-Q4_K_M.gguf",
+      "license": "apache-2.0",
+      "parallel": 8,
+      "ctx": 4096,
+      "flags": [
+        "-ngl",
+        "99",
+        "--split-mode",
+        "layer",
+        "--flash-attn",
+        "on",
+        "-ctk",
+        "q8_0",
+        "-ctv",
+        "q8_0"
+      ],
+      "reasoning": true,
+      "strengths": {
+        "writing": 4,
+        "code": 5,
+        "reasoning": 5
+      },
+      "tok_s": 26.5,
+      "source": "sysop batch 2026-10-06: 2x T4, 8 parallel, 48x256 tokens of code, llama.cpp CUDA q8_0 KV (dense: slower, strongest)",
+      "ready_minutes": {
+        "cached_engine": 2.7
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "name": "quality",
+  "summary": "The hardest work, cost secondary: Sonnet and Opus build, Gemini 3.1 Pro or DeepSeek V4 Pro reviews.",
+  "session": "opus",
+  "needs": [
+    "claude"
+  ],
+  "optional": [
+    "agy: Gemini 3.1 Pro as reviewer",
+    "openrouter with credit: DeepSeek V4 Pro as reviewer"
+  ],
+  "capacity": "the fewest tickets per plan window; Opus spends a plan fastest",
+  "caveats": [
+    "The most expensive preset; a $2 a day budget guards the per-token part."
+  ],
+  "settings": {
+    "tiers": {
+      "fast": [
+        "claude:sonnet"
+      ],
+      "standard": [
+        "claude:opus",
+        "claude:sonnet"
+      ],
+      "deep": [
+        "claude:opus"
+      ],
+      "review": [
+        "agy:gemini-3.1-pro-high",
+        "pi:openrouter/deepseek/deepseek-v4-pro",
+        "pi:google/gemini-3.8-flash@high",
+        "claude:sonnet"
+      ],
+      "verify": [
+        "claude:sonnet",
+        "pi:google/gemini-3.8-flash@high"
+      ]
+    },
+    "routes": {
+      "small": "fast",
+      "large": "standard",
+      "risky": "deep"
+    },
+    "prefer": "quality",
+    "cross_review": true,
+    "max_parallel": 3,
+    "budget": 2.0,
+    "agents": {
+      "default": "inherit"
+    }
+  }
+}

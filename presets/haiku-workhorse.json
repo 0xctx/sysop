@@ -1,0 +1,51 @@
+{
+  "name": "haiku-workhorse",
+  "summary": "The cheapest Claude: Haiku builds nearly everything, Sonnet only risky work.",
+  "session": "haiku",
+  "needs": [
+    "claude"
+  ],
+  "optional": [
+    "agy, or pi with a free GEMINI_API_KEY: a second vendor for the review"
+  ],
+  "capacity": "the most tickets per plan window of any Claude preset; roughly 3x claude-plan's (estimate)",
+  "caveats": [
+    "Haiku misses more on large changes; the review catches some of it, at the cost of extra rounds."
+  ],
+  "settings": {
+    "tiers": {
+      "fast": [
+        "claude:haiku",
+        "pi:google/gemini-3.8-flash"
+      ],
+      "standard": [
+        "claude:haiku",
+        "pi:google/gemini-3.8-flash@high"
+      ],
+      "deep": [
+        "claude:sonnet",
+        "claude:haiku"
+      ],
+      "review": [
+        "agy:gemini-3.8-flash-high",
+        "pi:google/gemini-3.8-flash@high",
+        "claude:sonnet"
+      ],
+      "verify": [
+        "claude:haiku",
+        "pi:google/gemini-3.8-flash"
+      ]
+    },
+    "routes": {
+      "small": "fast",
+      "large": "standard",
+      "risky": "deep"
+    },
+    "prefer": "economy",
+    "cross_review": true,
+    "max_parallel": 3,
+    "agents": {
+      "default": "haiku"
+    }
+  }
+}

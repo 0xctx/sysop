@@ -1,0 +1,144 @@
+#!/usr/bin/env python3
+"""Fake gh CLI for offline tests. State lives in $FAKE_GH_DIR; `origin` is a real local bare repo.
+
+Env knobs: FAKE_GH_NOAUTH=1 (auth status fails), FAKE_GH_CHECKS (JSON list for `pr checks`,
+default []), FAKE_GH_MERGEABLE (default MERGEABLE), FAKE_GH_REVIEW (reviewDecision, default ""),
+FAKE_GH_METHODS (allowed merge methods, default "merge"), FAKE_GH_ISSUES (JSON list of open issues
+{number, title, body, labels} the first time state is created).
+"""
+import json
+import os
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+state = Path(os.environ.get("FAKE_GH_DIR", "/tmp/fake-gh"))
+state.mkdir(parents=True, exist_ok=True)
+args = sys.argv[1:]
+with (state / "calls.log").open("a") as fh:
+    fh.write(" ".join(args) + "\n")
+db_path = state / "db.json"
+db = json.loads(db_path.read_text()) if db_path.is_file() else {
+    "prs": [], "comments": [], "next": 1, "issues": json.loads(os.environ.get("FAKE_GH_ISSUES", "[]"))}
+
+
+def save():
+    db_path.write_text(json.dumps(db, indent=2))
+
+
+def opt(flag, default=None):
+    return args[args.index(flag) + 1] if flag in args else default
+
+
+def origin():
+    return subprocess.run(["git", "remote", "get-url", "origin"], capture_output=True, text=True).stdout.strip()
+
+
+def remote_sha(branch):
+    out = subprocess.run(["git", "ls-remote", origin(), f"refs/heads/{branch}"], capture_output=True, text=True)
+    return out.stdout.split()[0] if out.stdout.strip() else ""
+
+
+def find(ref):
+    for pr in db["prs"]:
+        if str(pr["number"]) == str(ref) or pr["head"] == ref:
+            return pr
+    print(f"no pull requests found for {ref}", file=sys.stderr)
+    sys.exit(1)
+
+
+def fields(pr, keys):
+    full = {"number": pr["number"], "url": pr["url"], "state": pr["state"], "baseRefName": pr["base"],
+            "headRefName": pr["head"], "headRefOid": remote_sha(pr["head"]) or pr.get("merged_oid", ""),
+            "mergeable": os.environ.get("FAKE_GH_MERGEABLE", "MERGEABLE"),
+            "reviewDecision": os.environ.get("FAKE_GH_REVIEW", "")}
+    return {k: full[k] for k in keys.split(",")}
+
+
+if args[:2] == ["auth", "status"]:
+    sys.exit(1 if os.environ.get("FAKE_GH_NOAUTH") == "1" else 0)
+elif args[:2] == ["repo", "view"]:
+    methods = os.environ.get("FAKE_GH_METHODS", "merge").split(",")
+    print(json.dumps({"defaultBranchRef": {"name": "main"}, "mergeCommitAllowed": "merge" in methods,
+                      "squashMergeAllowed": "squash" in methods, "rebaseMergeAllowed": "rebase" in methods}))
+elif args[:2] == ["pr", "list"]:
+    head = opt("--head")
+    print(json.dumps([fields(p, opt("--json")) for p in db["prs"] if p["head"] == head]))
+elif args[:2] == ["pr", "create"]:
+    n = db["next"]
+    db["next"] += 1
+    pr = {"number": n, "url": f"https://github.com/o/r/pull/{n}", "state": "OPEN", "base": opt("--base"),
+          "head": opt("--head"), "title": opt("--title"), "body": Path(opt("--body-file")).read_text()}
+    db["prs"].append(pr)
+    save()
+    print(pr["url"])
+elif args[:2] == ["pr", "view"]:
+    print(json.dumps(fields(find(args[2]), opt("--json"))))
+elif args[:2] == ["pr", "checks"]:
+    checks = json.loads(os.environ.get("FAKE_GH_CHECKS", "[]"))
+    if not checks:
+        print("no checks reported on the 'x' branch", file=sys.stderr)
+        sys.exit(1)
+    print(json.dumps(checks))
+    buckets = {c.get("bucket") for c in checks}
+    sys.exit(1 if buckets & {"fail", "cancel"} else 8 if "pending" in buckets else 0)
+elif args[:2] == ["pr", "merge"]:
+    pr = find(args[2])
+    if opt("--match-head-commit") != remote_sha(pr["head"]):
+        print("head commit does not match", file=sys.stderr)
+        sys.exit(1)
+    with tempfile.TemporaryDirectory() as tmp:
+        run = lambda *a: subprocess.run(a, cwd=tmp, check=True, capture_output=True)  # noqa: E731
+        run("git", "clone", "-q", origin(), ".")
+        run("git", "config", "user.email", "gh@example.com")
+        run("git", "config", "user.name", "gh")
+        run("git", "checkout", "-q", pr["base"])
+        run("git", "merge", "--no-ff", "-q", "-m", f"Merge pull request #{pr['number']}", f"origin/{pr['head']}")
+        run("git", "push", "-q", "origin", pr["base"])
+    pr["merged_oid"] = remote_sha(pr["head"])
+    pr["state"] = "MERGED"
+    save()
+elif args[:2] == ["issue", "list"]:
+    label = opt("--label")
+    keys = opt("--json").split(",")
+    rows = [i for i in db.get("issues", []) if i.get("state", "OPEN") == "OPEN" and label in i.get("labels", [])]
+    print(json.dumps([{k: (i.get(k) if k != "url" else f"https://github.com/o/r/issues/{i['number']}") for k in keys}
+                      for i in rows]))
+elif args[:2] == ["issue", "close"]:
+    issue = next((i for i in db.get("issues", []) if str(i["number"]) == args[2]), None)
+    if issue is None:
+        print(f"could not resolve to an Issue with the number of {args[2]}", file=sys.stderr)
+        sys.exit(1)
+    issue.update(state="CLOSED", closing_comment=opt("--comment"))
+    save()
+elif args[0] == "api":
+    path = next(a for a in args[1:] if a.startswith("repos/"))
+    method = opt("-X", "GET")
+    body = json.loads(Path(opt("--input")).read_text())["body"] if "--input" in args else None
+    if path.endswith("/reviews"):  # tests add reviews straight into db.json
+        n = int(path.split("/")[-2])
+        print(json.dumps([r for r in db.get("reviews", []) if r["pr"] == n]))
+    elif path.endswith("/comments") and "/pulls/" in path:  # inline review comments
+        n = int(path.split("/")[-2])
+        print(json.dumps([c for c in db.get("line_comments", []) if c["pr"] == n]))
+    elif path.endswith("/comments") and "/issues/comments" not in path:
+        n = int(path.split("/")[-2])
+        if method == "POST":
+            cid = 1000 + len(db["comments"])
+            c = {"id": cid, "pr": n, "body": body, "html_url": f"https://github.com/o/r/pull/{n}#issuecomment-{cid}"}
+            db["comments"].append(c)
+            save()
+            print(json.dumps(c))
+        else:
+            print(json.dumps([c for c in db["comments"] if c["pr"] == n]))
+    else:
+        cid = int(path.split("/")[-1])
+        c = next(c for c in db["comments"] if c["id"] == cid)
+        if method == "PATCH":
+            c["body"] = body
+            save()
+        print(json.dumps(c))
+else:
+    print(f"fake gh: unsupported {args}", file=sys.stderr)
+    sys.exit(2)

@@ -1,0 +1,53 @@
+{
+  "name": "openrouter-value",
+  "summary": "OpenRouter credit, spent well: DeepSeek V4 builds, GLM 5.3 reviews, Claude Sonnet takes risky work.",
+  "session": "sonnet",
+  "needs": [
+    "pi",
+    "openrouter"
+  ],
+  "optional": [
+    "claude: risky work and a backup reviewer"
+  ],
+  "capacity": "about $0.01-0.05 per small ticket (estimate); a $2 a day budget guard",
+  "caveats": [
+    "Needs credit on the OpenRouter account: without it, paid models answer 402 and sysop falls back.",
+    "Prices move; `sysop.py models` shows today's spend."
+  ],
+  "settings": {
+    "tiers": {
+      "fast": [
+        "pi:openrouter/deepseek/deepseek-v4-flash",
+        "claude:haiku"
+      ],
+      "standard": [
+        "pi:openrouter/deepseek/deepseek-v4-pro",
+        "claude:sonnet"
+      ],
+      "deep": [
+        "claude:sonnet",
+        "pi:openrouter/deepseek/deepseek-v4-pro"
+      ],
+      "review": [
+        "pi:openrouter/z-ai/glm-5.3",
+        "claude:sonnet"
+      ],
+      "verify": [
+        "claude:haiku",
+        "pi:openrouter/z-ai/glm-5.3-flash"
+      ]
+    },
+    "routes": {
+      "small": "fast",
+      "large": "standard",
+      "risky": "deep"
+    },
+    "prefer": "balanced",
+    "cross_review": true,
+    "max_parallel": 3,
+    "budget": 2.0,
+    "agents": {
+      "default": "haiku"
+    }
+  }
+}

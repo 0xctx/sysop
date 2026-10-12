@@ -1,0 +1,55 @@
+{
+  "name": "google-plan",
+  "summary": "Your Google AI plan does the work through agy: Gemini 3.8 Flash builds, Gemini 3.1 Pro takes the hard tickets, GPT-OSS (another vendor, same plan) reviews.",
+  "session": "haiku",
+  "needs": [
+    "agy"
+  ],
+  "optional": [
+    "claude: risky work and a backup reviewer",
+    "gemini-key: the same Gemini models when agy's quota runs out",
+    "groq: a free GPT-OSS reviewer"
+  ],
+  "capacity": "agy's individual quota; when it runs out (it resets in hours or days) the same Gemini models answer through a free key",
+  "caveats": [
+    "agy's quota is per account and resets on its own schedule; sysop rests agy until then and says when.",
+    "agy cannot run the runtime verifier, so verify stays on Claude or pi."
+  ],
+  "settings": {
+    "tiers": {
+      "fast": [
+        "agy:gemini-3.8-flash-high",
+        "pi:google/gemini-3.8-flash"
+      ],
+      "standard": [
+        "agy:gemini-3.8-flash-high",
+        "agy:gemini-3.1-pro-high",
+        "pi:google/gemini-3.8-flash@high"
+      ],
+      "deep": [
+        "agy:gemini-3.1-pro-high",
+        "claude:sonnet"
+      ],
+      "review": [
+        "agy:gpt-oss-120b-medium",
+        "pi:groq/openai/gpt-oss-120b",
+        "claude:sonnet"
+      ],
+      "verify": [
+        "claude:haiku",
+        "pi:google/gemini-3.8-flash"
+      ]
+    },
+    "routes": {
+      "small": "fast",
+      "large": "standard",
+      "risky": "deep"
+    },
+    "prefer": "balanced",
+    "cross_review": true,
+    "max_parallel": 3,
+    "agents": {
+      "default": "haiku"
+    }
+  }
+}

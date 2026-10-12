@@ -1,0 +1,239 @@
+{
+  "about": "Capability catalog: what each known model is good at, for auto routes (route target auto:<skill>) and `sysop.py models available`. Skills are 1-5. cost: free (no charge), plan (inside a subscription quota), paid (metered). Scores are initial estimates; `tune` proposes changes from your own outcomes. Add or override entries under \"catalog\" in sysop.json.",
+  "models": {
+    "claude:opus": {
+      "cost": "paid",
+      "speed": 2,
+      "ctx": 200000,
+      "skills": {
+        "code": 5,
+        "writing": 5,
+        "reasoning": 5,
+        "review": 5,
+        "long": 4
+      },
+      "source": "initial estimate"
+    },
+    "claude:sonnet": {
+      "cost": "paid",
+      "speed": 3,
+      "ctx": 200000,
+      "skills": {
+        "code": 5,
+        "writing": 5,
+        "reasoning": 4,
+        "review": 5,
+        "long": 4
+      },
+      "source": "initial estimate"
+    },
+    "claude:haiku": {
+      "cost": "paid",
+      "speed": 5,
+      "ctx": 200000,
+      "skills": {
+        "code": 3,
+        "writing": 3,
+        "reasoning": 3,
+        "review": 3,
+        "long": 3
+      },
+      "source": "initial estimate"
+    },
+    "agy:gemini-3.1-pro-high": {
+      "cost": "plan",
+      "speed": 2,
+      "ctx": 1000000,
+      "skills": {
+        "code": 4,
+        "writing": 4,
+        "reasoning": 5,
+        "review": 4,
+        "long": 5
+      },
+      "source": "initial estimate"
+    },
+    "agy:gemini-3.8-flash-high": {
+      "cost": "plan",
+      "speed": 5,
+      "ctx": 1000000,
+      "skills": {
+        "code": 4,
+        "writing": 4,
+        "reasoning": 3,
+        "review": 3,
+        "long": 5
+      },
+      "source": "initial estimate"
+    },
+    "agy:gemini-3.8-flash-low": {
+      "cost": "plan",
+      "speed": 5,
+      "ctx": 1000000,
+      "skills": {
+        "code": 3,
+        "writing": 3,
+        "reasoning": 2,
+        "review": 2,
+        "long": 4
+      },
+      "source": "initial estimate"
+    },
+    "agy:gpt-oss-120b-medium": {
+      "cost": "plan",
+      "speed": 4,
+      "ctx": 128000,
+      "skills": {
+        "code": 3,
+        "writing": 3,
+        "reasoning": 4,
+        "review": 3,
+        "long": 2
+      },
+      "source": "initial estimate"
+    },
+    "agy:claude-sonnet-4-6": {
+      "cost": "plan",
+      "speed": 3,
+      "ctx": 200000,
+      "skills": {
+        "code": 5,
+        "writing": 5,
+        "reasoning": 4,
+        "review": 4,
+        "long": 4
+      },
+      "source": "initial estimate"
+    },
+    "pi:cline/nvidia/nemotron-3-super-120b-a12b:free": {
+      "cost": "free",
+      "speed": 4,
+      "ctx": 128000,
+      "skills": {
+        "code": 3,
+        "writing": 3,
+        "reasoning": 4,
+        "review": 3,
+        "long": 3
+      },
+      "source": "spike 1 (2026-10-06): fixed, tested and committed a ticket unattended; scores are initial estimates"
+    },
+    "pi:cline/poolside/laguna-s-2.1:free": {
+      "cost": "free",
+      "speed": 3,
+      "ctx": 128000,
+      "skills": {
+        "code": 4,
+        "writing": 2,
+        "reasoning": 3,
+        "review": 3,
+        "long": 3
+      },
+      "source": "spike 1 (2026-10-06): fixed, tested and committed a ticket unattended; scores are initial estimates"
+    },
+    "pi:cline/nvidia/nemotron-3-ultra-550b-a55b:free": {
+      "cost": "free",
+      "speed": 2,
+      "ctx": 128000,
+      "skills": {
+        "code": 4,
+        "writing": 4,
+        "reasoning": 5,
+        "review": 4,
+        "long": 3
+      },
+      "source": "answered a probe (2026-10-06); scores are initial estimates"
+    },
+    "pi:cline/poolside/laguna-xs-2.1:free": {
+      "cost": "free",
+      "speed": 4,
+      "ctx": 128000,
+      "skills": {
+        "code": 3,
+        "writing": 2,
+        "reasoning": 2,
+        "review": 2,
+        "long": 2
+      },
+      "source": "answered a probe (2026-10-06); scores are initial estimates"
+    },
+    "pi:cline/nvidia/nemotron-3.5-lightning:free": {
+      "cost": "free",
+      "speed": 5,
+      "ctx": 128000,
+      "skills": {
+        "code": 2,
+        "writing": 3,
+        "reasoning": 3,
+        "review": 2,
+        "long": 2
+      },
+      "source": "answered a probe (2026-10-06); scores are initial estimates"
+    },
+    "pi:cline/cohere/north-mini-code:free": {
+      "cost": "free",
+      "speed": 4,
+      "ctx": 128000,
+      "skills": {
+        "code": 3,
+        "writing": 2,
+        "reasoning": 2,
+        "review": 2,
+        "long": 2
+      },
+      "source": "answered a probe (2026-10-06); scores are initial estimates"
+    },
+    "pi:google/gemini-3.8-flash": {
+      "cost": "free",
+      "speed": 4,
+      "ctx": 1000000,
+      "skills": {
+        "code": 4,
+        "writing": 4,
+        "reasoning": 4,
+        "review": 3,
+        "long": 5
+      },
+      "source": "answered a probe via AI Studio free tier (2026-10-06); scores are initial estimates"
+    },
+    "pi:google/gemini-3.5-flash-lite": {
+      "cost": "free",
+      "speed": 5,
+      "ctx": 1000000,
+      "skills": {
+        "code": 2,
+        "writing": 3,
+        "reasoning": 2,
+        "review": 2,
+        "long": 4
+      },
+      "source": "answered a probe via AI Studio free tier (2026-10-06); scores are initial estimates"
+    },
+    "pi:groq/openai/gpt-oss-120b": {
+      "cost": "free",
+      "speed": 5,
+      "ctx": 131072,
+      "skills": {
+        "code": 4,
+        "writing": 3,
+        "reasoning": 4,
+        "review": 4,
+        "long": 3
+      },
+      "source": "initial estimate; Groq's free tier (probed 2026-10-11)"
+    },
+    "pi:groq/openai/gpt-oss-20b": {
+      "cost": "free",
+      "speed": 5,
+      "ctx": 131072,
+      "skills": {
+        "code": 3,
+        "writing": 3,
+        "reasoning": 3,
+        "review": 3,
+        "long": 2
+      },
+      "source": "initial estimate; Groq's free tier (probed 2026-10-11)"
+    }
+  }
+}

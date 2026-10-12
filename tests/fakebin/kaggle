@@ -1,0 +1,110 @@
+#!/usr/bin/env python3
+"""Fake kaggle CLI for offline tests. State lives in $FAKE_KAGGLE_DIR.
+
+Env knobs: FAKE_KAGGLE_STEPS (status polls before complete, default 2),
+FAKE_KAGGLE_FAIL=1 (the kernel ends in error), FAKE_KAGGLE_RUN=<port> (push really runs a serve
+notebook locally on that port; status follows its process), FAKE_KAGGLE_ENGINE=1|unproven (outputs a built engine).
+"""
+import json
+import os
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+state = Path(os.environ.get("FAKE_KAGGLE_DIR", "/tmp/fake-kaggle"))
+state.mkdir(parents=True, exist_ok=True)
+args = sys.argv[1:]
+with (state / "calls.log").open("a") as fh:
+    fh.write(" ".join(args) + "\n")
+
+
+def opt(flag, default=None):
+    return args[args.index(flag) + 1] if flag in args else default
+
+
+def slug(ref):
+    return ref.split("/")[-1]
+
+
+if args[:2] == ["config", "view"]:
+    print("Configuration values from /fake\n- username: tester\n- auth_method: OAUTH")
+elif args[:2] == ["datasets", "status"]:
+    if (state / "datasets" / slug(args[2])).is_dir():
+        print("ready")
+    else:
+        print("403 Client Error: Forbidden", file=sys.stderr)
+        sys.exit(1)
+elif args[:2] in (["datasets", "create"], ["datasets", "version"]):
+    src = Path(opt("-p", "."))
+    meta = json.loads((src / "dataset-metadata.json").read_text())
+    dst = state / "datasets" / slug(meta["id"])
+    shutil.rmtree(dst, ignore_errors=True)
+    shutil.copytree(src, dst)
+    print(f"Dataset {'created' if args[1] == 'create' else 'version created'}: {meta['id']}")
+elif args[:2] == ["kernels", "push"]:
+    src = Path(opt("-p", "."))
+    meta = json.loads((src / "kernel-metadata.json").read_text())
+    dst = state / "kernels" / slug(meta["id"])
+    shutil.rmtree(dst, ignore_errors=True)
+    shutil.copytree(src, dst)
+    (dst / "polls").write_text("0")
+    if os.environ.get("FAKE_KAGGLE_RUN"):  # a serve notebook: really run it here, on that port
+        root = dst / "kaggle"
+        (root / "working").mkdir(parents=True)
+        for ds in meta.get("dataset_sources", []):
+            if (state / "datasets" / slug(ds)).is_dir():
+                shutil.copytree(state / "datasets" / slug(ds), root / "input" / slug(ds))
+        (dst / "tmp").mkdir()
+        proc = subprocess.Popen([sys.executable, str(dst / "run.py")], start_new_session=True,
+                                stdout=open(dst / "run.log", "w"), stderr=subprocess.STDOUT,
+                                env={**os.environ, "SYSOP_KAGGLE_ROOT": str(root), "SYSOP_TMP": str(dst / "tmp"),
+                                     "SYSOP_TEST_SERVE": os.environ["FAKE_KAGGLE_RUN"]})
+        (dst / "pid").write_text(str(proc.pid))
+    print(f"Kernel version 1 successfully pushed.  Please check progress at https://www.kaggle.com/code/{meta['id']}")
+elif args[:2] == ["kernels", "status"]:
+    k = state / "kernels" / slug(args[2])
+    if not k.is_dir():
+        print("404 Client Error: Not Found", file=sys.stderr)
+        sys.exit(1)
+    if (k / "pid").is_file():  # a really running notebook: running while its process lives
+        try:
+            os.kill(int((k / "pid").read_text()), 0)
+            status = "RUNNING"
+        except ProcessLookupError:
+            metrics = k / "kaggle" / "working" / "metrics.json"
+            status = "ERROR" if metrics.is_file() and "error" in json.loads(metrics.read_text()) else "COMPLETE"
+        print(f'{args[2]} has status "KernelWorkerStatus.{status}"')
+        sys.exit(0)
+    polls = int((k / "polls").read_text()) + 1
+    (k / "polls").write_text(str(polls))
+    steps = int(os.environ.get("FAKE_KAGGLE_STEPS", "2"))
+    status = ("QUEUED" if polls == 1 and steps > 1 else "RUNNING" if polls < steps
+              else "ERROR" if os.environ.get("FAKE_KAGGLE_FAIL") == "1" else "COMPLETE")
+    print(f'{args[2]} has status "KernelWorkerStatus.{status}"')
+elif args[:2] == ["kernels", "output"]:
+    k = state / "kernels" / slug(args[2])
+    out = Path(opt("-p", "."))
+    out.mkdir(parents=True, exist_ok=True)
+    meta = json.loads((k / "kernel-metadata.json").read_text())
+    rows = []
+    for ds in meta.get("dataset_sources", []):
+        p = state / "datasets" / slug(ds) / "prompts.jsonl"
+        if p.is_file():
+            rows = [json.loads(line) for line in p.read_text().splitlines() if line.strip()]
+    with (out / "results.jsonl").open("w") as fh:
+        for r in rows:
+            fh.write(json.dumps({"id": r["id"], "output": f"echo: {r['prompt'][:20]}", "tokens": 5,
+                                 "seconds": 0.1}) + "\n")
+    metrics = {"rows": len(rows), "aggregate_tok_s": 42.0}
+    engine = os.environ.get("FAKE_KAGGLE_ENGINE")  # "1": a build that served on the GPU; "unproven": killed before
+    if engine == "1":
+        metrics.update(ready_s=100.0, gpus=["Tesla T4, 7000 MiB", "Tesla T4, 7000 MiB"])
+    (out / "metrics.json").write_text(json.dumps(metrics))
+    if engine:
+        (out / "llama-server").write_bytes(b"\x7fELF fake")
+    (out / f"{slug(args[2])}.log").write_text("[]")
+    print(f"Output file downloaded to {out}/results.jsonl")
+else:
+    print(f"fake kaggle: unsupported {args}", file=sys.stderr)
+    sys.exit(2)

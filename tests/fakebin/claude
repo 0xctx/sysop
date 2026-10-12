@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Fake claude for offline tests. FAKE_CLAUDE_COST: the total_cost_usd a json run reports (default 0.0123).
+[ -n "$FAKE_CLAUDE_CALLS" ] && echo "$*" >> "$FAKE_CLAUDE_CALLS"
+case " $* " in
+  *" --version "*) echo "${FAKE_CLAUDE_VERSION:-2.1.292} (Claude Code)" ;;
+  *" --output-format json "*)
+    printf '{"type":"result","subtype":"success","is_error":false,"result":"fake claude ran OK\\nREVIEW-START\\nNo defects.","total_cost_usd":%s,"usage":{"input_tokens":1200,"output_tokens":300}}\n' "${FAKE_CLAUDE_COST:-0.0123}"
+    ;;
+  *) echo "fake claude ran: $*" ;;
+esac
+exit "${FAKE_CLAUDE_EXIT:-0}"

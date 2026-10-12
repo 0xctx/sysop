@@ -1,0 +1,49 @@
+{
+  "name": "kaggle-session",
+  "summary": "A burst of work on your own Kaggle GPU session: served Qwen3.6 builds, Claude takes risky work and reviews.",
+  "session": "sonnet",
+  "needs": [
+    "claude",
+    "pi",
+    "kaggle"
+  ],
+  "optional": [],
+  "capacity": "one served model, about 110 tokens/s on 2xT4; a session lasts up to 4 hours",
+  "caveats": [
+    "Run `sysop.py serve up` first: 3-10 minutes to start; it stops after 20 idle minutes.",
+    "Kaggle's terms allow personal ML work, not general compute."
+  ],
+  "settings": {
+    "tiers": {
+      "fast": [
+        "pi:kaggle/qwen3.6-35b-a3b",
+        "claude:haiku"
+      ],
+      "standard": [
+        "pi:kaggle/qwen3.6-35b-a3b",
+        "claude:sonnet"
+      ],
+      "deep": [
+        "claude:sonnet"
+      ],
+      "review": [
+        "claude:sonnet",
+        "pi:google/gemini-3.8-flash@high"
+      ],
+      "verify": [
+        "claude:haiku"
+      ]
+    },
+    "routes": {
+      "small": "fast",
+      "large": "standard",
+      "risky": "deep"
+    },
+    "prefer": "balanced",
+    "cross_review": true,
+    "max_parallel": 2,
+    "agents": {
+      "default": "haiku"
+    }
+  }
+}

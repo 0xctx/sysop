@@ -1,0 +1,10 @@
+{"data": [
+ {"id": "google/gemini-3.5-flash", "created": 1779193800, "context_length": 1048576, "pricing": {"completion": "0.000009"}, "supported_parameters": ["reasoning", "tools"]},
+ {"id": "google/gemini-3.8-flash", "created": 1788362056, "context_length": 1048576, "pricing": {"completion": "0.00000375"}, "supported_parameters": ["reasoning", "tools"]},
+ {"id": "google/gemma-4-31b-it:free", "created": 1775000000, "context_length": 262144, "pricing": {"completion": "0"}, "supported_parameters": ["tools"]},
+ {"id": "nvidia/nemotron-3-super-120b-a12b:free", "created": 1777000000, "context_length": 1000000, "pricing": {"completion": "0"}, "supported_parameters": ["reasoning"]},
+ {"id": "anthropic/claude-haiku-4.5", "created": 1760000000, "context_length": 200000, "pricing": {"completion": "0.000005"}, "supported_parameters": ["reasoning"]},
+ {"id": "anthropic/claude-sonnet-5", "created": 1782843083, "context_length": 1000000, "pricing": {"completion": "0.00001"}, "supported_parameters": ["reasoning"]},
+ {"id": "anthropic/claude-sonnet-4.6", "created": 1770000000, "context_length": 1000000, "pricing": {"completion": "0.000015"}, "supported_parameters": ["reasoning"]},
+ {"id": "openai/gpt-oss-120b", "created": 1754414231, "context_length": 131072, "pricing": {"completion": "0.00000017"}, "supported_parameters": ["reasoning"]}
+]}

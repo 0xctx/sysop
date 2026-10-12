@@ -1,0 +1,51 @@
+{
+  "name": "two-plans",
+  "summary": "A Claude plan and a Google plan share the work: Gemini builds small and standard tickets, Claude takes the risky ones, and each reviews the other.",
+  "session": "sonnet",
+  "needs": [
+    "claude",
+    "agy"
+  ],
+  "optional": [
+    "gemini-key: Gemini through a free key when agy rests"
+  ],
+  "capacity": "the most plan capacity: two subscriptions, two separate limits",
+  "caveats": [
+    "Each vendor reviews the other's work, so both plans are spent a little on every ticket."
+  ],
+  "settings": {
+    "tiers": {
+      "fast": [
+        "agy:gemini-3.8-flash-high",
+        "claude:haiku"
+      ],
+      "standard": [
+        "agy:gemini-3.1-pro-high",
+        "claude:sonnet"
+      ],
+      "deep": [
+        "claude:opus",
+        "agy:gemini-3.1-pro-high"
+      ],
+      "review": [
+        "agy:gemini-3.1-pro-high",
+        "claude:sonnet",
+        "agy:gpt-oss-120b-medium"
+      ],
+      "verify": [
+        "claude:haiku"
+      ]
+    },
+    "routes": {
+      "small": "fast",
+      "large": "standard",
+      "risky": "deep"
+    },
+    "prefer": "balanced",
+    "cross_review": true,
+    "max_parallel": 4,
+    "agents": {
+      "default": "sonnet"
+    }
+  }
+}

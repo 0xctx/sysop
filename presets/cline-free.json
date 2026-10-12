@@ -1,0 +1,47 @@
+{
+  "name": "cline-free",
+  "summary": "Cline's free pools through pi-free: Nemotron and Laguna build and review each other.",
+  "session": "haiku",
+  "needs": [
+    "pi",
+    "pi-free"
+  ],
+  "optional": [],
+  "capacity": "free; the pools are shared and sometimes busy",
+  "caveats": [
+    "pi-free presents itself as Cline's VS Code client to reach these pools. Use it only if you accept that; sysop never depends on it.",
+    "Free pools may log prompts."
+  ],
+  "settings": {
+    "tiers": {
+      "fast": [
+        "pi:cline/nvidia/nemotron-3.5-lightning:free"
+      ],
+      "standard": [
+        "pi:cline/poolside/laguna-s-2.1:free"
+      ],
+      "deep": [
+        "pi:cline/nvidia/nemotron-3-ultra-550b-a55b:free"
+      ],
+      "review": [
+        "pi:cline/nvidia/nemotron-3-super-120b-a12b:free",
+        "pi:cline/poolside/laguna-s-2.1:free"
+      ],
+      "verify": [
+        "pi:cline/nvidia/nemotron-3-super-120b-a12b:free",
+        "pi:cline/poolside/laguna-s-2.1:free"
+      ]
+    },
+    "routes": {
+      "small": "fast",
+      "large": "standard",
+      "risky": "deep"
+    },
+    "prefer": "economy",
+    "cross_review": true,
+    "max_parallel": 2,
+    "agents": {
+      "default": "haiku"
+    }
+  }
+}

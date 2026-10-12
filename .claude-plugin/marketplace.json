@@ -1,0 +1,14 @@
+{
+  "name": "sysop",
+  "owner": {
+    "name": "0xctx"
+  },
+  "description": "sysop: one small Claude Code plugin for contract-first, checked, independently reviewed delivery.",
+  "plugins": [
+    {
+      "name": "sysop",
+      "source": "./",
+      "description": "A small, autonomous delivery toolkit: contract-first changes carried to a checked, independently reviewed, landed state, alone or as a parallel fleet across claude, agy and pi (free models included)."
+    }
+  ]
+}
